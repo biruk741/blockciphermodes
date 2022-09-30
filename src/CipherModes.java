@@ -3,14 +3,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class CipherModes {
-    public static List<Integer> getBinaryOfString(String s){
+    public static List<Integer> getBinaryOfString(String s) {
         byte[] bytes = s.getBytes();
         List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < bytes.length; i++)
-        {
+        for (int i = 0; i < bytes.length; i++) {
             int val = bytes[i];
-            for (int j = 0; j < 8; j++)
-            {
+            for (int j = 0; j < 8; j++) {
                 result.add((val & 128) == 0 ? 0 : 1);
                 val <<= 1;
             }
@@ -18,9 +16,8 @@ public class CipherModes {
         }
         return result;
     }
-    //         System.out.println("1. ECB\n2. CTR\n3. CBC\n4. CFB\n5. OFB");
 
-    public static List<Integer> EK(List<Integer> plainText, List<Integer> key){
+    public static List<Integer> EK(List<Integer> plainText, List<Integer> key) {
         List<Integer> result = new ArrayList<>();
 
         Collections.rotate(plainText, 3);
@@ -35,19 +32,23 @@ public class CipherModes {
         return result;
     }
 
-    public static List<Integer> ECB(List<Integer> plainText, List<Integer> key){
+    public static List<Integer> ECB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
         return null;
     }
-    public static List<Integer> CTR(List<Integer> plainText, List<Integer> key){
+
+    public static List<Integer> CTR(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
         return null;
     }
-    public static List<Integer> CBC(List<Integer> plainText, List<Integer> key){
+
+    public static List<Integer> CBC(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
         return null;
     }
-    public static List<Integer> CFB(List<Integer> plainText, List<Integer> key){
+
+    public static List<Integer> CFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
         return null;
     }
-    public static List<Integer> OFB(List<Integer> plainText, List<Integer> key){
+
+    public static List<Integer> OFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
         return null;
     }
 }
