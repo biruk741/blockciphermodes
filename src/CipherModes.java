@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CipherModes {
     public static List<Integer> getBinaryOfString(String s) {
@@ -32,23 +30,110 @@ public class CipherModes {
         return result;
     }
 
-    public static List<Integer> ECB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
-        return null;
+    public static List<Integer> EKInverse(List<Integer> plainText, List<Integer> key) {
+        List<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < 35; i++) {
+            int x = plainText.get(i);
+            int y = key.get(i);
+            int res = x ^ y;
+
+            result.add(res);
+        }
+        Collections.rotate(plainText, -3);
+
+        return result;
+    }
+
+    public static List<Integer> ECB(List<List<Integer>> plainTexts, List<Integer> key) {
+        List<Integer> result = new ArrayList<>();
+        for (List<Integer> list: plainTexts){
+            result.addAll(EK(list, key));
+        }
+        return result;
     }
 
     public static List<Integer> CTR(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
-        return null;
+        List<Integer> finalResult = new ArrayList<>();
+
+
+        for (int i = 0; i < plainTexts.size(); i++) {
+            List<Integer> current = plainTexts.get(i);
+
+            String result = Integer.toBinaryString(i);
+            String resultWithPadding = String.format("%32s", result).replaceAll(" ", "0");
+
+            List<Integer> list = Arrays.stream(resultWithPadding.split("\\B"))
+                    .map(Integer::parseInt).toList();
+            List<Integer> clonedIV = new ArrayList<>(IV);
+            clonedIV.addAll(list);
+
+            finalResult.addAll(XOR(EK(clonedIV, key), current));
+        }
+
+        return finalResult;
     }
 
     public static List<Integer> CBC(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
-        return null;
+        List<Integer> finalResult = new ArrayList<>();
+
+        List<Integer> prevResult = null;
+
+        for (List<Integer> list: plainTexts){
+            if (prevResult == null){
+                prevResult = IV;
+            }
+            prevResult = EK(XOR(list, prevResult), key);
+            finalResult.addAll(prevResult);
+        }
+        return finalResult;
     }
 
     public static List<Integer> CFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
-        return null;
+        List<Integer> finalResult = new ArrayList<>();
+
+        List<Integer> prevResult = null;
+
+        for (List<Integer> list: plainTexts){
+            if (prevResult == null){
+                prevResult = IV;
+            }
+            prevResult = XOR(EK(prevResult, key), list);
+            finalResult.addAll(prevResult);
+        }
+        return finalResult;
     }
 
     public static List<Integer> OFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
-        return null;
+        List<Integer> finalResult = new ArrayList<>();
+
+        List<Integer> prevIV = null;
+
+        for (List<Integer> list: plainTexts){
+            if (prevIV == null){
+                prevIV = IV;
+            }
+
+            prevIV = EK(prevIV, key);
+
+            finalResult.addAll(XOR(prevIV, list));
+        }
+        return finalResult;
+    }
+
+    public static List<Integer> XOR(List<Integer> list1,List<Integer> list2){
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < list1.size(); i++) {
+            result.add(list1.get(i) ^ list2.get(i));
+        }
+        return result;
+    }
+
+    public static List<Integer> generateRandomIV(){
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < 35; i++) {
+            result.add(new Random().nextInt(2));
+        }
+        return result;
     }
 }
