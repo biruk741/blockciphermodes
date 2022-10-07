@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class CipherModes {
+public class CipherModesDecryption {
     public static List<Integer> getBinaryOfString(String s) {
         byte[] bytes = s.getBytes();
         List<Integer> result = new ArrayList<>();
@@ -30,20 +30,35 @@ public class CipherModes {
         return result;
     }
 
-    public static List<Integer> ECB(List<List<Integer>> plainTexts, List<Integer> key) {
+    public static List<Integer> EKInverse(List<Integer> plainText, List<Integer> key) {
         List<Integer> result = new ArrayList<>();
-        for (List<Integer> list: plainTexts){
+
+        for (int i = 0; i < 35; i++) {
+            int x = plainText.get(i);
+            int y = key.get(i);
+            int res = x ^ y;
+
+            result.add(res);
+        }
+        Collections.rotate(plainText, -3);
+
+        return result;
+    }
+
+    public static List<Integer> ECBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key) {
+        List<Integer> result = new ArrayList<>();
+        for (List<Integer> list: cipherTexts){
             result.addAll(EK(list, key));
         }
         return result;
     }
 
-    public static List<Integer> CTR(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CTRDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
         List<Integer> finalResult = new ArrayList<>();
 
 
-        for (int i = 0; i < plainTexts.size(); i++) {
-            List<Integer> current = plainTexts.get(i);
+        for (int i = 0; i < cipherTexts.size(); i++) {
+            List<Integer> current = cipherTexts.get(i);
 
             String result = Integer.toBinaryString(i);
             String resultWithPadding = String.format("%32s", result).replaceAll(" ", "0");
@@ -59,12 +74,12 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> CBC(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CBCDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevResult = null;
 
-        for (List<Integer> list: plainTexts){
+        for (List<Integer> list: cipherTexts){
             if (prevResult == null){
                 prevResult = IV;
             }
@@ -74,12 +89,12 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> CFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevResult = null;
 
-        for (List<Integer> list: plainTexts){
+        for (List<Integer> list: cipherTexts){
             if (prevResult == null){
                 prevResult = IV;
             }
@@ -89,12 +104,12 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> OFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> OFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevIV = null;
 
-        for (List<Integer> list: plainTexts){
+        for (List<Integer> list: cipherTexts){
             if (prevIV == null){
                 prevIV = IV;
             }
@@ -110,14 +125,6 @@ public class CipherModes {
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < list1.size(); i++) {
             result.add(list1.get(i) ^ list2.get(i));
-        }
-        return result;
-    }
-
-    public static List<Integer> generateRandomIV(){
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < 35; i++) {
-            result.add(new Random().nextInt(2));
         }
         return result;
     }
