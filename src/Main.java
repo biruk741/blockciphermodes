@@ -76,7 +76,7 @@ public class Main {
     private static void ECBDecrypt(String nextLine) {
         List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
         List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
-        List<Character> res = CipherModesDecryption.ECBDecrypt2(partitionedCipherText, getKey());
+        List<Character> res = CipherModesDecryption.ECBDecrypt(partitionedCipherText, getKey());
         System.out.println("The output of decryption using ECB is: " + CipherModesDecryption.cleanString(res));
     }
 

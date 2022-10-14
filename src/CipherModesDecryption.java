@@ -62,15 +62,7 @@ public class CipherModesDecryption {
         return result;
     }
 
-    public static List<Integer> ECBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key) {
-        List<Integer> result = new ArrayList<>();
-        for (List<Integer> list: cipherTexts){
-            result.addAll(EKInverse(list, key));
-        }
-        return result;
-    }
-
-    public static List<Character> ECBDecrypt2(List<List<Integer>> cipherTexts, List<Integer> key) {
+    public static List<Character> ECBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key) {
         List<Integer> beforePartition = new ArrayList<>();
         List<Character> result = new ArrayList<>();
         for (List<Integer> list: cipherTexts){
