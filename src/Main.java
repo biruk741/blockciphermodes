@@ -40,7 +40,7 @@ public class Main {
      * For decryption, we need to be able to
      */
     private static void decryptPrompt() {
-        System.out.println("1. ECB\n2. CTR\n3. CBC\n4. CFB\n5. OFB\n6. Run all modes");
+        System.out.println("1. ECB\n2. CTR\n3. CBC\n4. CFB\n5. OFB\n");
         int choice = scanner.nextInt();
         System.out.println("Please enter the ciphertext:");
         switch (choice) {
@@ -49,28 +49,37 @@ public class Main {
             case 3 -> CBCDecrypt(scanner2.nextLine());
             case 4 -> CFBDecrypt(scanner2.nextLine());
             case 5 -> OFBDecrypt(scanner2.nextLine());
-            case 6 -> runAllDecrypt(scanner2.nextLine());
         }
         mainPrompt();
     }
 
-    private static void runAllDecrypt(String nextLine) {
-    }
 
     private static void OFBDecrypt(String nextLine) {
-
+        List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
+        List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
+        List<Character> res = CipherModesDecryption.OFBDecrypt(partitionedCipherText, getKey(), getIV());
+        System.out.println("The output of decryption using OFB is: " + CipherModesDecryption.cleanString(res));
     }
 
     private static void CFBDecrypt(String nextLine) {
-
+        List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
+        List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
+        List<Character> res = CipherModesDecryption.CFBDecrypt(partitionedCipherText, getKey(), getIV());
+        System.out.println("The output of decryption using CFB is: " + CipherModesDecryption.cleanString(res));
     }
 
     private static void CBCDecrypt(String nextLine) {
-
+        List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
+        List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
+        List<Character> res = CipherModesDecryption.CBCDecrypt(partitionedCipherText, getKey(), getIV());
+        System.out.println("The output of decryption using CBC is: " + CipherModesDecryption.cleanString(res));
     }
 
     private static void CTRDecrypt(String nextLine) {
-
+        List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
+        List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
+        List<Character> res = CipherModesDecryption.CTRDecrypt(partitionedCipherText, getKey(), getIVShorter());
+        System.out.println("The output of decryption using CTR is: " + CipherModesDecryption.cleanString(res));
     }
 
     private static void ECBDecrypt(String nextLine) {
