@@ -15,6 +15,16 @@ public class CipherModes {
         return result;
     }
 
+    /**
+     * Converts a list of Integers into a string of just 1s and 0s, without spaces, commas, or brackets
+     * @param binary A list of Integers
+     * @return A String of the integers in the list without spaces, commas, or brackets
+     */
+    public static String cleanBinary(List<Integer> binary) {
+        String result = binary.toString().replaceAll("[\\[\\]\s,]", "");
+        return result;
+    }
+
     public static List<Integer> EK(List<Integer> plainText, List<Integer> key) {
         List<Integer> result = new ArrayList<>();
 
@@ -46,7 +56,7 @@ public class CipherModes {
             List<Integer> current = plainTexts.get(i);
 
             String result = Integer.toBinaryString(i);
-            String resultWithPadding = String.format("%32s", result).replaceAll(" ", "0");
+            String resultWithPadding = String.format("%16s", result).replaceAll(" ", "0");
 
             List<Integer> list = Arrays.stream(resultWithPadding.split("\\B"))
                     .map(Integer::parseInt).toList();

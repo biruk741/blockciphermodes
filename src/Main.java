@@ -1,3 +1,5 @@
+import javax.crypto.Cipher;
+import javax.crypto.CipherSpi;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,13 +12,16 @@ public class Main {
 
     static List<Integer> IV = null;
     static List<Integer> key = null;
-
+    // todo: We will probably need to be able to specify an IV and key because we need to decrypt another groups text with a given IV and key.
     public static void main(String[] args) {
         System.out.println("Welcome!");
-        prompt();
+        mainPrompt();
     }
 
-    private static void prompt() {
+    /**
+     * We should think of a way to get a user input key and IV and use them later?
+     */
+    private static void encryptPrompt() {
         System.out.println("1. ECB\n2. CTR\n3. CBC\n4. CFB\n5. OFB\n6. Run all modes");
         int choice = scanner.nextInt();
         System.out.println("Please enter the plaintext:");
@@ -28,13 +33,67 @@ public class Main {
             case 5 -> OFB(scanner2.nextLine());
             case 6 -> runAll(scanner2.nextLine());
         }
-        prompt();
+        mainPrompt();
     }
 
-    private static List<List<Integer>> partition(List<Integer> binaryPlainText) {
+    /**
+     * For decryption, we need to be able to
+     */
+    private static void decryptPrompt() {
+        System.out.println("1. ECB\n2. CTR\n3. CBC\n4. CFB\n5. OFB\n6. Run all modes");
+        int choice = scanner.nextInt();
+        System.out.println("Please enter the ciphertext:");
+        switch (choice) {
+            case 1 -> ECBDecrypt(scanner2.nextLine());
+            case 2 -> CTRDecrypt(scanner2.nextLine());
+            case 3 -> CBCDecrypt(scanner2.nextLine());
+            case 4 -> CFBDecrypt(scanner2.nextLine());
+            case 5 -> OFBDecrypt(scanner2.nextLine());
+            case 6 -> runAllDecrypt(scanner2.nextLine());
+        }
+        mainPrompt();
+    }
+
+    private static void runAllDecrypt(String nextLine) {
+    }
+
+    private static void OFBDecrypt(String nextLine) {
+
+    }
+
+    private static void CFBDecrypt(String nextLine) {
+
+    }
+
+    private static void CBCDecrypt(String nextLine) {
+
+    }
+
+    private static void CTRDecrypt(String nextLine) {
+
+    }
+
+    private static void ECBDecrypt(String nextLine) {
+        List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
+        List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
+        List<Character> res = CipherModesDecryption.ECBDecrypt2(partitionedCipherText, getKey());
+        System.out.println("The output of decryption using ECB is: " + CipherModesDecryption.cleanString(res));
+    }
+
+    private static void mainPrompt() {
+        System.out.println("1. Encrypt\n2. Decrypt");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1 -> encryptPrompt();
+            case 2 -> decryptPrompt();
+        }
+        mainPrompt();
+    }
+
+    private static List<List<Integer>> partition(List<Integer> binaryText) {
         List<List<Integer>> res = new ArrayList<>();
-        for (int i = 0; i < binaryPlainText.size() / 35; i++) {
-            res.add(binaryPlainText.subList(i * 35, i * 35 + 35));
+        for (int i = 0; i < binaryText.size() / 35; i++) {
+            res.add(binaryText.subList(i * 35, i * 35 + 35));
         }
         return res;
     }
@@ -53,9 +112,8 @@ public class Main {
         binaryPlainText = padAsNeeded(binaryPlainText);
         List<List<Integer>> partitioned = partition(binaryPlainText);
 
-        List<Integer> IV = CipherModes.generateRandomIV();
         List<Integer> res = CipherModes.ECB(partitioned, getKey());
-        System.out.println("Output of ECB is: " + res + "\nUsed IV: " + IV + "\n");
+        System.out.println("Output of ECB is: " + CipherModes.cleanBinary(res));
     }
 
  // TODO: PLS TEST
@@ -64,7 +122,7 @@ public class Main {
         List<List<Integer>> partitioned = partition(binaryPlainText);
 
         List<Integer> res = CipherModes.CTR(partitioned, getKey(), getIVShorter());
-        System.out.println("Output of CTR is: " + res);
+        System.out.println("Output of CTR is: " + CipherModes.cleanBinary(res));
     }
 
     public static void CBC(String plainText) {
@@ -74,7 +132,7 @@ public class Main {
 
         List<Integer> IV = CipherModes.generateRandomIV();
         List<Integer> res = CipherModes.CBC(partitioned, getKey(), IV);
-        System.out.println("Output of CBC is: " + res + "\nUsed IV: " + IV + "\n");
+        System.out.println("Output of CBC is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
     }
 
     public static void CFB(String plainText) {
@@ -84,7 +142,7 @@ public class Main {
 
         List<Integer> IV = CipherModes.generateRandomIV();
         List<Integer> res = CipherModes.CFB(partitioned, getKey(), IV);
-        System.out.println("Output of CFB is: " + res + "\nUsed IV: " + IV + "\n");
+        System.out.println("Output of CFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
     }
 
     public static void OFB(String plainText) {
@@ -93,7 +151,7 @@ public class Main {
 
         List<Integer> IV = CipherModes.generateRandomIV();
         List<Integer> res = CipherModes.OFB(partitioned, getKey(), IV);
-        System.out.println("Output of OFB is: " + res + "\nUsed IV: " + IV + "\n");
+        System.out.println("Output of OFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
     }
 
     private static List<Integer> getIV() {
@@ -112,7 +170,7 @@ public class Main {
         String input = scanner2.nextLine().replaceAll(" ", "");
         if (input.length() != 19) throw new IllegalArgumentException();
         IV = stringToList(input);
-        System.out.println("You have entered: " + IV);
+        System.out.println("You have entered: " + CipherModes.cleanBinary(IV));
         return IV;
     }
 
@@ -121,7 +179,7 @@ public class Main {
 
         System.out.println("Please enter a key string:");
         key = stringToList(scanner2.nextLine().replaceAll(" ", ""));
-        System.out.println("You have entered: " + key);
+        System.out.println("You have entered: " + CipherModes.cleanBinary(key));
         return key;
     }
 
