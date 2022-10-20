@@ -76,7 +76,7 @@ public class CipherModes {
 
         for (List<Integer> list: plainTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = new ArrayList<>(IV);
             }
             prevResult = EK(XOR(list, prevResult), key);
             finalResult.addAll(prevResult);
@@ -91,7 +91,7 @@ public class CipherModes {
 
         for (List<Integer> list: plainTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = new ArrayList<>(IV);
             }
             prevResult = XOR(EK(prevResult, key), list);
             finalResult.addAll(prevResult);
@@ -106,7 +106,7 @@ public class CipherModes {
 
         for (List<Integer> list: plainTexts){
             if (prevIV == null){
-                prevIV = IV;
+                prevIV = new ArrayList<>(IV);
             }
 
             prevIV = EK(prevIV, key);

@@ -109,10 +109,10 @@ public class CipherModesDecryption {
 
         for (List<Integer> list: cipherTexts){
             if (prevIV == null){
-                prevIV = IV;
+                prevIV = new ArrayList<>(IV);
             }
             finalResult.addAll(XOR(EKInverse(list, key),prevIV));
-            prevIV = list;
+            prevIV = new ArrayList<>(list);
         }
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
         for (List<Integer> list: partitioned) {
@@ -130,11 +130,11 @@ public class CipherModesDecryption {
 
         for (List<Integer> list: cipherTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = new ArrayList<>(IV);
             }
 
             finalResult.addAll(XOR(CipherModes.EK(prevResult, key), list));
-            prevResult = list;
+            prevResult = new ArrayList<>(list);
         }
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
         for (List<Integer> list: partitioned) {
