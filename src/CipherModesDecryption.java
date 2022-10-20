@@ -1,19 +1,6 @@
 import java.util.*;
 
 public class CipherModesDecryption {
-    public static List<Integer> getBinaryOfString(String s) {
-        byte[] bytes = s.getBytes();
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < bytes.length; i++) {
-            int val = bytes[i];
-            for (int j = 0; j < 8; j++) {
-                result.add((val & 128) == 0 ? 0 : 1);
-                val <<= 1;
-            }
-            result.remove(i * 7); // todo: fix this or something
-        }
-        return result;
-    }
 
     /**
      * Converts a list of Integers into a String of regular characters
@@ -173,8 +160,13 @@ public class CipherModesDecryption {
         return result;
     }
 
-    public static String cleanString(List<Character> res) {
-        String result = res.toString().replaceAll("[\\[\\]\s,]", "");
-        return result;
+    public static String cleanStringOutput(List<Character> res) {
+        StringBuilder result = res.stream().collect(StringBuilder::new, CipherModesDecryption::removeInvalidChars,
+                (a, b) -> a.append(",").append(b));
+        return result.toString();
+    }
+
+    private static StringBuilder removeInvalidChars(StringBuilder x, Character y) {
+        return (y < 32 || y>126) ? x.append(' '): x.append(y);
     }
 }
