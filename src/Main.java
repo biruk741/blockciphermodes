@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    static Scanner scanner = new Scanner(System.in);
-    static Scanner scanner2 = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in); // Switch Scanner
+    static Scanner scanner2 = new Scanner(System.in); // Encryption Scanner
+
+    static Scanner scanner3 = new Scanner(System.in); // Decryption Scanner
 
     static List<Integer> IV = null;
     static List<Integer> key = null;
@@ -44,17 +46,23 @@ public class Main {
         int choice = scanner.nextInt();
         System.out.println("Please enter the ciphertext:");
         switch (choice) {
-            case 1 -> ECBDecrypt(scanner2.nextLine());
-            case 2 -> CTRDecrypt(scanner2.nextLine());
-            case 3 -> CBCDecrypt(scanner2.nextLine());
-            case 4 -> CFBDecrypt(scanner2.nextLine());
-            case 5 -> OFBDecrypt(scanner2.nextLine());
+            case 1 -> ECBDecrypt(scanner3.nextLine());
+            case 2 -> CTRDecrypt(scanner3.nextLine());
+            case 3 -> CBCDecrypt(scanner3.nextLine());
+            case 4 -> CFBDecrypt(scanner3.nextLine());
+            case 5 -> OFBDecrypt(scanner3.nextLine());
         }
         mainPrompt();
     }
 
+    // 1100001 0110101 1011010 0100011 0001001
 
+    /**
+     * OFB decryption is the same as encryption, so we use the same method for decryption.
+     * @param nextLine
+     */
     private static void OFBDecrypt(String nextLine) {
+        List<Character> finalResultChars = new ArrayList<>();
         List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
         List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
         List<Character> res = CipherModesDecryption.OFBDecrypt(partitionedCipherText, getKey(), getIV());
@@ -64,7 +72,7 @@ public class Main {
     private static void CFBDecrypt(String nextLine) {
         List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
         List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
-        List<Character> res = CipherModesDecryption.CFBDecrypt(partitionedCipherText, getKey(), getIV());
+        List<Character> res = CipherModesDecryption.CFBDecrypt2(partitionedCipherText, getKey(), getIV());
         System.out.println("The output of decryption using CFB is: " + CipherModesDecryption.cleanString(res));
     }
 
@@ -164,16 +172,16 @@ public class Main {
     }
 
     private static List<Integer> getIV() {
-        if (IV != null) return IV;
+        //if (IV != null) return IV;
 
         System.out.println("Please enter an IV string:");
         IV = stringToList(scanner2.nextLine().replaceAll(" ", ""));
-        System.out.println("You have entered: " + IV);
+        System.out.println("You have entered: " + CipherModes.cleanBinary(IV));
         return IV;
     }
 
     private static List<Integer> getIVShorter() {
-        if (IV != null) return IV;
+        //if (IV != null) return IV;
 
         System.out.println("Please enter an IV string:");
         String input = scanner2.nextLine().replaceAll(" ", "");

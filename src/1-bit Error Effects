@@ -1,0 +1,18 @@
+ECB:
+For both encryption and decryption, only one block is effected by a 1-bit error and that's the block with the error since there is no chaining
+in ECB mode.
+
+CBC:
+For encryption, the number of blocks effected by a 1-bit error in CBC depends on which block the error occurs in.  An error would
+effect the block containing the error and all subsequent blocks.
+For decryption however, two blocks are effected by a 1-bit error in CBC, the block with the error, and the following block.
+
+CFB:
+For both encryption and decryption, the number of blocks effected by a 1-bit error in CFB depends on which block the error occurs in.  An error would effect
+the block containing the error and all subsequent blocks.
+
+OFB:
+For both encryption and decryption, only one block is effected by a 1-bit error in OFB, the block in which the error occurs.
+
+CTR:
+For both encryption and decryption, only one block is effected by a 1-bit error in CTR, the block in which the error occurs.

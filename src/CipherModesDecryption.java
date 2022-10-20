@@ -1,19 +1,6 @@
 import java.util.*;
 
 public class CipherModesDecryption {
-    public static List<Integer> getBinaryOfString(String s) {
-        byte[] bytes = s.getBytes();
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < bytes.length; i++) {
-            int val = bytes[i];
-            for (int j = 0; j < 8; j++) {
-                result.add((val & 128) == 0 ? 0 : 1);
-                val <<= 1;
-            }
-            result.remove(i * 7); // todo: fix this or something
-        }
-        return result;
-    }
 
     /**
      * Converts a list of Integers into a String of regular characters
@@ -27,7 +14,7 @@ public class CipherModesDecryption {
         return character;
     }
 
-    private static List<List<Integer>> partitionBlocks(List<Integer> cipherText) {
+    public static List<List<Integer>> partitionBlocks(List<Integer> cipherText) {
         List<List<Integer>> res = new ArrayList<>();
         for (int i = 0; i < cipherText.size() / 7; i++) {
             res.add(cipherText.subList(i * 7, i * 7 + 7));
@@ -91,7 +78,7 @@ public class CipherModesDecryption {
             List<Integer> clonedIV = new ArrayList<>(IV);
             clonedIV.addAll(list);
 
-            finalResult.addAll(XOR(CipherModes.EK(clonedIV, key), current));
+            finalResult.addAll(CipherModes.XOR(CipherModes.EK(clonedIV, key), current));
         }
 
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
@@ -111,7 +98,7 @@ public class CipherModesDecryption {
             if (prevIV == null){
                 prevIV = IV;
             }
-            finalResult.addAll(XOR(EKInverse(list, key),prevIV));
+            finalResult.addAll(CipherModes.XOR(EKInverse(list, key),prevIV));
             prevIV = list;
         }
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
@@ -125,7 +112,6 @@ public class CipherModesDecryption {
         List<Integer> finalResult = new ArrayList<>();
         List<Character> finalResultChars = new ArrayList<>();
 
-
         List<Integer> prevResult = null;
 
         for (List<Integer> list: cipherTexts){
@@ -133,7 +119,7 @@ public class CipherModesDecryption {
                 prevResult = IV;
             }
 
-            finalResult.addAll(XOR(CipherModes.EK(prevResult, key), list));
+            finalResult.addAll(CipherModes.XOR(CipherModes.EK(prevResult, key), list));
             prevResult = list;
         }
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
@@ -143,20 +129,20 @@ public class CipherModesDecryption {
         return finalResultChars;
     }
 
-    public static List<Character> OFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Character> CFBDecrypt2(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
         List<Integer> finalResult = new ArrayList<>();
         List<Character> finalResultChars = new ArrayList<>();
 
-        List<Integer> prevIV = null;
+        List<Integer> prevResult = null;
 
-        for (List<Integer> list: cipherTexts){
-            if (prevIV == null){
-                prevIV = IV;
+        for (int i = 0; i < cipherTexts.size(); i++) {
+            if(prevResult == null) {
+                prevResult = IV;
             }
+            List<Integer> block = cipherTexts.get(i);
 
-            prevIV = CipherModes.EK(prevIV, key);
-
-            finalResult.addAll(XOR(prevIV, list));
+            finalResult.addAll(CipherModes.XOR(CipherModes.EK(prevResult, key), block));
+            prevResult = block;
         }
         List<List<Integer>> partitioned = partitionBlocks(finalResult);
         for (List<Integer> list: partitioned) {
@@ -165,12 +151,14 @@ public class CipherModesDecryption {
         return finalResultChars;
     }
 
-    public static List<Integer> XOR(List<Integer> list1,List<Integer> list2){
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < list1.size(); i++) {
-            result.add(list1.get(i) ^ list2.get(i));
+    public static List<Character> OFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
+        List<Character> finalResultChars = new ArrayList<>();
+
+        List<List<Integer>> partitioned = partitionBlocks(CipherModes.OFB(cipherTexts, key, IV));
+        for (List<Integer> list: partitioned) {
+            finalResultChars.add(binaryToChar(list));
         }
-        return result;
+        return finalResultChars;
     }
 
     public static String cleanString(List<Character> res) {

@@ -29,6 +29,7 @@ public class CipherModes {
         List<Integer> result = new ArrayList<>();
 
         Collections.rotate(plainText, 3);
+
         for (int i = 0; i < 35; i++) {
             int x = plainText.get(i);
             int y = key.get(i);
