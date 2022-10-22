@@ -49,7 +49,7 @@ public class CipherModes {
         return result;
     }
 
-    public static List<Integer> CTR(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CTR(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
 
 
@@ -61,7 +61,7 @@ public class CipherModes {
 
             List<Integer> list = Arrays.stream(resultWithPadding.split("\\B"))
                     .map(Integer::parseInt).toList();
-            List<Integer> clonedIV = new ArrayList<>(IV);
+            List<Integer> clonedIV = new ArrayList<>(givenIV);
             clonedIV.addAll(list);
 
             finalResult.addAll(XOR(EK(clonedIV, key), current));
@@ -70,14 +70,14 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> CBC(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CBC(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevResult = null;
 
         for (List<Integer> list: plainTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = givenIV;
             }
             prevResult = EK(XOR(list, prevResult), key);
             finalResult.addAll(prevResult);
@@ -85,14 +85,14 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> CFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> CFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevResult = null;
 
         for (List<Integer> list: plainTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = givenIV;
             }
             prevResult = XOR(EK(prevResult, key), list);
             finalResult.addAll(prevResult);
@@ -100,14 +100,14 @@ public class CipherModes {
         return finalResult;
     }
 
-    public static List<Integer> OFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Integer> OFB(List<List<Integer>> plainTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
 
         List<Integer> prevIV = null;
 
         for (List<Integer> list: plainTexts){
             if (prevIV == null){
-                prevIV = IV;
+                prevIV = givenIV;
             }
 
             prevIV = EK(prevIV, key);

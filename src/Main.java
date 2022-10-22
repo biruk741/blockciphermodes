@@ -55,14 +55,11 @@ public class Main {
         mainPrompt();
     }
 
-    // 1100001 0110101 1011010 0100011 0001001
-
     /**
      * OFB decryption is the same as encryption, so we use the same method for decryption.
      * @param nextLine
      */
     private static void OFBDecrypt(String nextLine) {
-        List<Character> finalResultChars = new ArrayList<>();
         List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
         List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
         List<Character> res = CipherModesDecryption.OFBDecrypt(partitionedCipherText, getKey(), getIV());
@@ -72,7 +69,7 @@ public class Main {
     private static void CFBDecrypt(String nextLine) {
         List<Integer> binaryCipherText = CipherModesDecryption.stringToList(nextLine.replaceAll(" ", ""));
         List<List<Integer>> partitionedCipherText = partition(binaryCipherText);
-        List<Character> res = CipherModesDecryption.CFBDecrypt2(partitionedCipherText, getKey(), getIV());
+        List<Character> res = CipherModesDecryption.CFBDecrypt(partitionedCipherText, getKey(), getIV());
         System.out.println("The output of decryption using CFB is: " + CipherModesDecryption.cleanString(res));
     }
 
@@ -147,9 +144,9 @@ public class Main {
         binaryPlainText = padAsNeeded(binaryPlainText);
         List<List<Integer>> partitioned = partition(binaryPlainText);
 
-        List<Integer> IV = CipherModes.generateRandomIV();
-        List<Integer> res = CipherModes.CBC(partitioned, getKey(), IV);
-        System.out.println("Output of CBC is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
+        List<Integer> randomIV = CipherModes.generateRandomIV();
+        List<Integer> res = CipherModes.CBC(partitioned, getKey(), randomIV);
+        System.out.println("Output of CBC is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(randomIV) + "\n");
     }
 
     public static void CFB(String plainText) {
@@ -157,18 +154,18 @@ public class Main {
         binaryPlainText = padAsNeeded(binaryPlainText);
         List<List<Integer>> partitioned = partition(binaryPlainText);
 
-        List<Integer> IV = CipherModes.generateRandomIV();
-        List<Integer> res = CipherModes.CFB(partitioned, getKey(), IV);
-        System.out.println("Output of CFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
+        List<Integer> randomIV = CipherModes.generateRandomIV();
+        List<Integer> res = CipherModes.CFB(partitioned, getKey(), randomIV);
+        System.out.println("Output of CFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(randomIV) + "\n");
     }
 
     public static void OFB(String plainText) {
         List<Integer> binaryPlainText = CipherModes.getBinaryOfString(plainText);
         List<List<Integer>> partitioned = partition(binaryPlainText);
 
-        List<Integer> IV = CipherModes.generateRandomIV();
-        List<Integer> res = CipherModes.OFB(partitioned, getKey(), IV);
-        System.out.println("Output of OFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(IV) + "\n");
+        List<Integer> randomIV = CipherModes.generateRandomIV();
+        List<Integer> res = CipherModes.OFB(partitioned, getKey(), randomIV);
+        System.out.println("Output of OFB is: " + CipherModes.cleanBinary(res) + "\nUsed IV: " + CipherModes.cleanBinary(randomIV) + "\n");
     }
 
     private static List<Integer> getIV() {

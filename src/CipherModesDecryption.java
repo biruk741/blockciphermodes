@@ -62,7 +62,7 @@ public class CipherModesDecryption {
         return result;
     }
 
-    public static List<Character> CTRDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Character> CTRDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
         List<Character> finalResultChars = new ArrayList<>();
 
@@ -75,7 +75,7 @@ public class CipherModesDecryption {
 
             List<Integer> list = Arrays.stream(resultWithPadding.split("\\B"))
                     .map(Integer::parseInt).toList();
-            List<Integer> clonedIV = new ArrayList<>(IV);
+            List<Integer> clonedIV = new ArrayList<>(givenIV);
             clonedIV.addAll(list);
 
             finalResult.addAll(CipherModes.XOR(CipherModes.EK(clonedIV, key), current));
@@ -88,7 +88,7 @@ public class CipherModesDecryption {
         return finalResultChars;
     }
 
-    public static List<Character> CBCDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Character> CBCDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
         List<Character> finalResultChars = new ArrayList<>();
 
@@ -96,7 +96,7 @@ public class CipherModesDecryption {
 
         for (List<Integer> list: cipherTexts){
             if (prevIV == null){
-                prevIV = IV;
+                prevIV = givenIV;
             }
             finalResult.addAll(CipherModes.XOR(EKInverse(list, key),prevIV));
             prevIV = list;
@@ -108,7 +108,7 @@ public class CipherModesDecryption {
         return finalResultChars;
     }
 
-    public static List<Character> CFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
+    public static List<Character> CFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> givenIV) {
         List<Integer> finalResult = new ArrayList<>();
         List<Character> finalResultChars = new ArrayList<>();
 
@@ -116,7 +116,7 @@ public class CipherModesDecryption {
 
         for (List<Integer> list: cipherTexts){
             if (prevResult == null){
-                prevResult = IV;
+                prevResult = givenIV;
             }
 
             finalResult.addAll(CipherModes.XOR(CipherModes.EK(prevResult, key), list));
@@ -129,32 +129,10 @@ public class CipherModesDecryption {
         return finalResultChars;
     }
 
-    public static List<Character> CFBDecrypt2(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
-        List<Integer> finalResult = new ArrayList<>();
+    public static List<Character> OFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> givenIV) {
         List<Character> finalResultChars = new ArrayList<>();
 
-        List<Integer> prevResult = null;
-
-        for (int i = 0; i < cipherTexts.size(); i++) {
-            if(prevResult == null) {
-                prevResult = IV;
-            }
-            List<Integer> block = cipherTexts.get(i);
-
-            finalResult.addAll(CipherModes.XOR(CipherModes.EK(prevResult, key), block));
-            prevResult = block;
-        }
-        List<List<Integer>> partitioned = partitionBlocks(finalResult);
-        for (List<Integer> list: partitioned) {
-            finalResultChars.add(binaryToChar(list));
-        }
-        return finalResultChars;
-    }
-
-    public static List<Character> OFBDecrypt(List<List<Integer>> cipherTexts, List<Integer> key, List<Integer> IV) {
-        List<Character> finalResultChars = new ArrayList<>();
-
-        List<List<Integer>> partitioned = partitionBlocks(CipherModes.OFB(cipherTexts, key, IV));
+        List<List<Integer>> partitioned = partitionBlocks(CipherModes.OFB(cipherTexts, key, givenIV));
         for (List<Integer> list: partitioned) {
             finalResultChars.add(binaryToChar(list));
         }
